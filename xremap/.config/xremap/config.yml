@@ -18,7 +18,8 @@ modmap:
 keymap:
   - name: Global
     remap:
-      Shift-Esc: Shift-KEY_GRAVE
+      Shift_L-Esc: KEY_GRAVE
+      Shift_R-Esc: Shift-KEY_GRAVE
       Shift_R-backspace: KEY_DELETE
   - name: Firefox Emacs Binding
     application:
