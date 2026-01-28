@@ -3,31 +3,40 @@
 import subprocess
 import json
 
-process = subprocess.Popen(
-    ["dwm-msg", "subscribe", "monitor_focus_change_event"],
-    stdout=subprocess.PIPE,
-    text=True,
-)
-
 event = "monitor_focus_change_event"
+max_retry = 100
 while True:
+    process = subprocess.Popen(
+        ["dwm-msg", "subscribe", "monitor_focus_change_event"],
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+
+    retry = 0
     output = ""
-    while process.poll() is None:
-        output += process.stdout.readline()
-        try:
-            message = json.loads(output.strip("\n"))
-            output = ""
-            if event in message:
-                subprocess.run(
-                    [
-                        "/usr/bin/notify-send",
-                        "--icon=/home/yayu/.config/dunst/monitor.png",
-                        "Monitor", "-u",
-                        "low",
-                    ]
-                )
-                # message[event]
-        except json.JSONDecodeError as e:
-            pass
-        except Exception as e:
-            print(e)
+    try:
+        while process.poll() is None:
+            if retry == max_retry:
+                break
+            output += process.stdout.readline()
+            try:
+                message = json.loads(output.strip("\n"))
+                output = ""
+                if event in message:
+                    subprocess.run(
+                        [
+                            "/usr/bin/notify-send",
+                            "--icon=/home/yayu/.config/dunst/monitor.png",
+                            "Monitor", "-u",
+                            "low",
+                        ]
+                    )
+                    # message[event]
+            except json.JSONDecodeError as e:
+                retry += 1
+    except Exception as e:
+        retry += 1
+        print(e)
+        print(output)
+        with open("~/monitor_indicator.dbg", "a") as f:
+            f.write(str(e))
