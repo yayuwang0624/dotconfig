@@ -112,7 +112,7 @@ export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 ##################################################
 source $ZSH/oh-my-zsh.sh
 
-export EDITOR='emacsclient -c'
+export EDITOR='emacsclient'
 bindkey -e
 
 setopt nobeep
@@ -122,6 +122,20 @@ setopt nobeep
 ##################################################
 
 setxkbmap -option caps:ctrl_modifier
+
+
+##################################################
+# zsh-autosuggestions
+##################################################
+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(
+    end-of-line
+)
+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+    forward-word
+    emacs-forward-word
+    forward-char
+    emacs-forward-char
+)
 
 
 ##################################################
@@ -200,7 +214,6 @@ bindkey '\ec' capitalize-word
 bindkey '\el' down-case-word
 bindkey '^x^f' fzf-file-widget # f for file
 bindkey '^x^z' fzf-cd-widget # j for jump
-bindkey '^F' forward-char
 bindkey -r "^J"
 bindkey -r "^O"
 

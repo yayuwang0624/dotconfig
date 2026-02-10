@@ -2,7 +2,7 @@
 Description=Xremap Daemon
 
 [Service]
-ExecStart=/home/yayu/.cargo/bin/xremap /home/yayu/.config/xremap/config.yml
+ExecStart=/usr/bin/xremap /home/yayu/.config/xremap/config.yml
 
 [Install]
 WantedBy=default.target
