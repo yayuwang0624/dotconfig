@@ -1,5 +1,5 @@
 #!/bin/bash
 
 status=$(amixer sget Master | tail -n1 | sed -r "s/.*\[(.*)\]/\1/")
-vol=$(amixer get Master | tail -n1 | sed -r "s/.*\[(.*)%\].*/\1/")
-echo "  ${vol}%"
+vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '/MUTED/ {print "muted"} !/MUTED/ {print int($2 * 100) "%"}')
+echo "   ${vol}"
