@@ -4,6 +4,9 @@ Emacs*useXIM: false
 Xcursor.size: 64
 Xcursor.theme: phinger-cursors-light
 
+xterm*faceName: Monospace
+xterm*faceSize: 14
+
 ! These might also be useful depending on your monitor and personal preference:
 Xft.autohint: 0
 Xft.lcdfilter:  lcddefault
