@@ -72,12 +72,10 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git
-         zsh-z
          cp
          zsh-syntax-highlighting
          zsh-autosuggestions
          fzf-tab)
-
 
 
 # export MANPATH="/usr/local/man:$MANPATH"
