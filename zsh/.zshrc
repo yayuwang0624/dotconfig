@@ -90,6 +90,8 @@ plugins=(git
 #   export EDITOR='mvim'
 # fi
 
+alias kssh="kitten ssh"
+
 export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 
 # Compilation flags
