@@ -255,6 +255,7 @@ bindkey -r "^O"
 
 alias ls="exa -l --icons -s modified"
 alias cat="bat"
+alias clip="xclip -selection clipboard"
 
 # opam configuration
 [[ ! -r /home/yayu/.opam/opam-init/init.zsh ]] || source /home/yayu/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
