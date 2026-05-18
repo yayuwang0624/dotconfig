@@ -153,8 +153,9 @@ setopt nobeep
 # caps_lock -> ctrl
 ##################################################
 
-setxkbmap -option caps:ctrl_modifier
-
+if [[ -n "$DISPLAY" || -n "$WAYLAND_DISPLAY" ]] && command -v setxkbmap &>/dev/null; then
+  setxkbmap -option caps:ctrl_modifier
+fi
 
 ##################################################
 # zsh-autosuggestions
@@ -191,9 +192,8 @@ ZSH_HIGHLIGHT_STYLES[comment]=fg=gray,bold
 export FZF_DEFAULT_OPTS='--height 50% --layout=reverse --border --info=inline --min-height=10 --bind ctrl-b:preview-up,ctrl-f:preview-down,alt-v:half-page-up,ctrl-v:half-page-down,alt-b:preview-half-page-up,alt-f:preview-half-page-down'
 export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :100 {}'"
 export FZF_ALT_C_OPTS="--preview 'exa -T -L 2 --color=always $realpath| head -100'"
-source "/usr/share/fzf/key-bindings.zsh"
 
-
+[ -f /usr/share/fzf/key-bindings.zsh ] && source "/usr/share/fzf/key-bindings.zsh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 
