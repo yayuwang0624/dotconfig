@@ -92,7 +92,39 @@ plugins=(git
 
 alias kssh="kitten ssh"
 
-export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
+
+##################################################
+# SSH Agent
+##################################################
+
+ssh_agent_setup() {
+  # 1. SSH_AUTH_SOCK socket
+  if [[ -S "$SSH_AUTH_SOCK" ]]; then
+    return
+  fi
+
+  # 2. systemd socket
+  if [[ -S "$XDG_RUNTIME_DIR/ssh-agent.socket" ]]; then
+    export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+    return
+  fi
+
+  # 3. cross session agent
+  local agent_file="${XDG_RUNTIME_DIR:-$HOME/.local/run}/ssh-agent.env"
+  if [[ -f "$agent_file" ]]; then
+    source "$agent_file" > /dev/null
+    if [[ -S "$SSH_AUTH_SOCK" ]] && kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
+      return
+    fi
+  fi
+
+  # 4. new ssh-agent
+  mkdir -p "${agent_file:h}"
+  ssh-agent > "$agent_file"
+  source "$agent_file" > /dev/null
+}
+
+ssh_agent_setup
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
