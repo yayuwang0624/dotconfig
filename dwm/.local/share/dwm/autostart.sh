@@ -39,7 +39,7 @@ run_once picom picom
 run_once dwmblocks dwmblocks
 run_once ibus-daemon ibus-daemon -x -d
 run_once feh feh --bg-tile ~/Documents/Wallpapers/mao.jpg --bg-fill ~/Documents/Wallpapers/mao_v.png
-run_once flameshot flameshot
+run_once Snipaste Snipaste
 # run_once WeChat.exe WeChat
 run_once Discord discord
 run_once monitor_indicator monitor_indicator
