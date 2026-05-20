@@ -3,6 +3,9 @@ all: install
 dwm:
 	stow -t ${HOME} -R dwm
 
+dwl:
+	stow -t ${HOME} -R dwl
+
 zsh:
 	stow -t ${HOME} -R zsh
 
@@ -46,6 +49,6 @@ xremap:
 tmux:
 	stow -t ${HOME} -R tmux
 
-install: dwm formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux
+install: dwm dwl formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux
 
-.PHONY: all install dwm formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux
+.PHONY: all dwl install dwm formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux
