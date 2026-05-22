@@ -255,7 +255,13 @@ bindkey -r "^O"
 
 alias ls="exa -l --icons -s modified"
 alias cat="bat"
-clip() { tr -d '\n' | xclip -selection clipboard; }
+clip() {
+  if [ -n "$WAYLAND_DISPLAY" ]; then
+    wl-copy --trim-newline
+  else
+    sed -z 's/\n$//' | xclip -selection clipboard
+  fi
+}
 
 # opam configuration
 [[ ! -r /home/yayu/.opam/opam-init/init.zsh ]] || source /home/yayu/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
