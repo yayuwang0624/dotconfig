@@ -23,8 +23,9 @@ fi
 
 time=$HH":"$MM
 
-if [ "$time" == "" ]; then
-  echo "$icon $cap%"
-else
-  echo "$icon $cap% $time"
-fi
+echo "$icon $cap%"
+# if [ "$time" == "" ]; then
+#   echo "$icon $cap%"
+# else
+#   echo "$icon $cap% $time"
+# fi

@@ -1,0 +1,1 @@
+export XKB_DEFAULT_OPTIONS=caps:ctrl_modifier

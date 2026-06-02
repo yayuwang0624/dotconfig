@@ -1,0 +1,13 @@
+profile docked {
+        output eDP-1 mode 3024x1890@120 position 3840,0 scale 1.5 transform normal
+        output "Dell Inc. DELL S2722QC G5KWLD3" mode 3840x2160@60 position 0,0 scale 1.5 transform normal
+}
+
+profile projector {
+        output eDP-1 mode 3024x1890@120 position 1920,0 scale 1.5 transform normal
+        output HDMI-A-1 mode 1920x1200 position 0,0 scale 1.0 transform normal
+}
+
+profile mobile {
+        output eDP-1 mode 3024x1890@120 position 0,0 scale 1.5 transform normal
+}

@@ -153,7 +153,7 @@ setopt nobeep
 # caps_lock -> ctrl
 ##################################################
 
-if [[ -n "$DISPLAY" || -n "$WAYLAND_DISPLAY" ]] && command -v setxkbmap &>/dev/null; then
+if [[ "$XDG_SESSION_TYPE" == "x11" ]] && command -v setxkbmap &>/dev/null; then
   setxkbmap -option caps:ctrl_modifier
 fi
 
