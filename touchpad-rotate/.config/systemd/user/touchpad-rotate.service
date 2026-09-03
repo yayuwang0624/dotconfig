@@ -1,0 +1,15 @@
+[Unit]
+Description=Touchpad rotation shim (virtual evdev clone with rotated coords)
+After=graphical-session-pre.target
+# The shim exits whenever the trackpad is absent, so it restarts until the
+# device appears. Without this, systemd's default rate limit (5 starts per
+# 10s) would give up while the trackpad is simply switched off.
+StartLimitIntervalSec=0
+
+[Service]
+ExecStart=%h/.local/bin/touchpad-rotate -n "Magic Trackpad" -r 270
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
