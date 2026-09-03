@@ -4,26 +4,11 @@ url="$1"
 
 if [[ "$url" == file://* ]]; then
   file="${url#file://}"
-  line=1
-  col=1
-
-  if [[ "$file" =~ ^([^:]+):([0-9]+):([0-9]+)$ ]]; then
-     filepath="${BASH_REMATCH[1]}"
-     line="${BASH_REMATCH[2]}"
-     col="${BASH_REMATCH[3]}"
-  elif [[ "$file" =~ ^([^:]+):([0-9]+)$ ]]; then
-      filepath="${BASH_REMATCH[1]}"
-      line="${BASH_REMATCH[2]}"
-  else
-      filepath="$file"
-  fi
-
-  emacsclient --no-wait --eval "(progn
-    (find-file \"$filepath\")
-    (goto-char (point-min))
-    (forward-line $(($line - 1)))
-    (forward-char $(($col - 1)))
+  elisp="(progn
+    (find-file \"${file//\"/\\\"}\")
     (select-frame-set-input-focus (selected-frame)))"
+
+  $(emacsclient --no-wait --eval "$elisp")
 
   wmctrl -xa emacs
 else
