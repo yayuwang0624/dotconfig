@@ -165,6 +165,9 @@ ssh_agent_setup
 source $ZSH/oh-my-zsh.sh
 
 export EDITOR='emacsclient'
+export GTAGSCONF=/usr/share/gtags/gtags.conf
+export GTAGSLABEL=native-pygments
+export GTAGSOBJDIRPREFIX="$HOME/.cache/gtags"
 bindkey -e
 
 setopt nobeep
@@ -209,7 +212,7 @@ ZSH_HIGHLIGHT_STYLES[comment]=fg=gray,bold
 ##################################################
 # fzf
 ##################################################
-export FZF_DEFAULT_OPTS='--height 50% --layout=reverse --border --info=inline --min-height=10 --bind ctrl-b:preview-up,ctrl-f:preview-down,alt-v:half-page-up,ctrl-v:half-page-down,alt-b:preview-half-page-up,alt-f:preview-half-page-down'
+export FZF_DEFAULT_OPTS_BASE="--height 50% --layout=reverse --border --info=inline --min-height=10 --bind ctrl-b:preview-up,ctrl-f:preview-down,alt-v:half-page-up,ctrl-v:half-page-down,alt-b:preview-half-page-up,alt-f:preview-half-page-down"
 export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :100 {}'"
 export FZF_ALT_C_OPTS="--preview 'exa -T -L 2 --color=always $realpath| head -100'"
 
@@ -239,6 +242,72 @@ zstyle ':fzf-tab:*' fzf-pad 10
 zstyle ':fzf-tab:*' fzf-bindings 'ctrl-a:toggle-all'
 zstyle ':fzf-tab:*' continuous-trigger 'tab'
 
+
+
+##################################################
+# theme
+##################################################
+# theme [dark|light], no arg toggles. kitty auto_reload_config picks it up.
+
+THEME_FILE=${XDG_CACHE_HOME:-$HOME/.cache}/theme-mode
+THEME_KITTY_CONF=$HOME/.config/kitty/kitty.conf
+
+typeset -gA THEME_FZF_COLORS=(
+  light 'light,fg:-1,bg:-1,gutter:#f8f8f8,fg+:#2a2b33,bg+:#e4e4e4,hl:#2f5af3,hl+:#2f5af3,info:#6a6b73,border:#cccccc,prompt:#2f5af3,pointer:#de3d35,marker:#3e953a,spinner:#d2b67b,header:#950095'
+  dark  'dark,fg:-1,bg:-1,gutter:#282c34,fg+:#bbc2cf,bg+:#3f444a,hl:#51afef,hl+:#51afef,info:#5B6268,border:#3f444a,prompt:#51afef,pointer:#ff6c6b,marker:#98be65,spinner:#ECBE7B,header:#c678dd'
+)
+typeset -gA THEME_BAT=( light OneHalfLight dark OneHalfDark )
+
+theme-show() {
+  local m
+  if [[ -r $THEME_FILE ]]; then
+    m=$(<$THEME_FILE)
+    [[ $m == (dark|light) ]] && { print -r -- $m; return }
+  fi
+  # no state file, fall back to whatever kitty.conf includes
+  if grep -q '^include doom_one_light.conf' $THEME_KITTY_CONF 2>/dev/null; then
+    print -r -- light
+  else
+    print -r -- dark
+  fi
+}
+
+# this shell only, writes nothing
+theme-use() {
+  local m=$1
+  export FZF_COLORS=${THEME_FZF_COLORS[$m]}
+  export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS_BASE} --color=${FZF_COLORS}"
+  export BAT_THEME=${THEME_BAT[$m]}
+  zstyle ':fzf-tab:*' fzf-flags --color=${FZF_COLORS}
+}
+
+theme() {
+  local m=$1
+  [[ -z $m ]] && { [[ $(theme-show) == dark ]] && m=light || m=dark }
+  if [[ $m != (dark|light) ]]; then
+    print -u2 -- "theme: want 'dark', 'light', or nothing to toggle"
+    return 1
+  fi
+
+  # --follow-symlinks: kitty.conf is a symlink into this repo
+  if [[ $m == dark ]]; then
+    sed -i --follow-symlinks \
+      -e 's|^# *include doom_one\.conf$|include doom_one.conf|' \
+      -e 's|^include doom_one_light\.conf$|# include doom_one_light.conf|' \
+      $THEME_KITTY_CONF
+  else
+    sed -i --follow-symlinks \
+      -e 's|^include doom_one\.conf$|# include doom_one.conf|' \
+      -e 's|^# *include doom_one_light\.conf$|include doom_one_light.conf|' \
+      $THEME_KITTY_CONF
+  fi
+
+  mkdir -p ${THEME_FILE:h} && print -r -- $m > $THEME_FILE
+  theme-use $m
+  print -r -- "theme: $m"
+}
+
+theme-use "$(theme-show)"
 
 ##################################################
 # yazi
@@ -304,5 +373,23 @@ export PATH=$HOME/.cabal/bin:$HOME/.ghcup/bin:$PATH
 
 export PATH=$HOME/.cargo/bin:$PATH
 
-eval "$(zoxide init zsh)"
-eval "$(starship init zsh)"
+export PATH=$HOME/go/bin:$PATH
+
+# uv — Python interpreter manager, venv, and package installer
+# Docs: https://docs.astral.sh/uv/
+if command -v uv &>/dev/null; then
+  eval "$(uv generate-shell-completion zsh)"
+  eval "$(uvx --generate-shell-completion zsh)"
+fi
+
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
+command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/yayu/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc' ]; then . '/home/yayu/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/yayu/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/yayu/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc'; fi
+
+
+if [ -f '/home/yayu/Project/codeql/codeql' ]; then export PATH=/home/yayu/codeql:$PATH; fi
