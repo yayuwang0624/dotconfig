@@ -1,7 +1,7 @@
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/.local/bin:$PATH
 
-export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
+export ZSH_COMPDUMP=$HOME/.oh-my-zsh/cache/.zcompdump-$HOST
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -165,7 +165,12 @@ ssh_agent_setup
 source $ZSH/oh-my-zsh.sh
 
 export EDITOR='emacsclient'
-export GTAGSCONF=/usr/share/gtags/gtags.conf
+for _gtagsconf in /usr/share/gtags/gtags.conf \
+                  /usr/local/share/gtags/gtags.conf \
+                  /opt/homebrew/share/gtags/gtags.conf; do
+  [[ -r $_gtagsconf ]] && { export GTAGSCONF=$_gtagsconf; break }
+done
+unset _gtagsconf
 export GTAGSLABEL=native-pygments
 export GTAGSOBJDIRPREFIX="$HOME/.cache/gtags"
 bindkey -e
@@ -214,9 +219,15 @@ ZSH_HIGHLIGHT_STYLES[comment]=fg=gray,bold
 ##################################################
 export FZF_DEFAULT_OPTS_BASE="--height 50% --layout=reverse --border --info=inline --min-height=10 --bind ctrl-b:preview-up,ctrl-f:preview-down,alt-v:half-page-up,ctrl-v:half-page-down,alt-b:preview-half-page-up,alt-f:preview-half-page-down"
 export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :100 {}'"
-export FZF_ALT_C_OPTS="--preview 'exa -T -L 2 --color=always $realpath| head -100'"
+_tree_cmd=exa; (( $+commands[eza] )) && _tree_cmd=eza
+export FZF_ALT_C_OPTS="--preview '$_tree_cmd -T -L 2 --color=always $realpath| head -100'"
+unset _tree_cmd
 
-[ -f /usr/share/fzf/key-bindings.zsh ] && source "/usr/share/fzf/key-bindings.zsh"
+if [ -f /usr/share/fzf/key-bindings.zsh ]; then
+  source /usr/share/fzf/key-bindings.zsh
+elif (( $+commands[fzf] )); then
+  eval "$(fzf --zsh)"
+fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 
@@ -289,18 +300,19 @@ theme() {
     return 1
   fi
 
-  # --follow-symlinks: kitty.conf is a symlink into this repo
+  # :A resolves the symlink; BSD sed has no --follow-symlinks
+  local target=${THEME_KITTY_CONF:A}
+  local tmp=${target}.theme.$$
   if [[ $m == dark ]]; then
-    sed -i --follow-symlinks \
-      -e 's|^# *include doom_one\.conf$|include doom_one.conf|' \
-      -e 's|^include doom_one_light\.conf$|# include doom_one_light.conf|' \
-      $THEME_KITTY_CONF
+    sed -e 's|^# *include doom_one\.conf$|include doom_one.conf|' \
+        -e 's|^include doom_one_light\.conf$|# include doom_one_light.conf|' \
+        $target > $tmp && command mv -f $tmp $target
   else
-    sed -i --follow-symlinks \
-      -e 's|^include doom_one\.conf$|# include doom_one.conf|' \
-      -e 's|^# *include doom_one_light\.conf$|include doom_one_light.conf|' \
-      $THEME_KITTY_CONF
+    sed -e 's|^include doom_one\.conf$|# include doom_one.conf|' \
+        -e 's|^# *include doom_one_light\.conf$|include doom_one_light.conf|' \
+        $target > $tmp && command mv -f $tmp $target
   fi
+  command rm -f $tmp
 
   mkdir -p ${THEME_FILE:h} && print -r -- $m > $THEME_FILE
   theme-use $m
@@ -356,7 +368,9 @@ elif (( $+commands[batcat] )); then
 fi
 
 clip() {
-  if [ -n "$WAYLAND_DISPLAY" ]; then
+  if (( $+commands[pbcopy] )); then
+    perl -0777 -pe 's/\n\z//' | pbcopy
+  elif [ -n "$WAYLAND_DISPLAY" ]; then
     wl-copy --trim-newline
   else
     sed -z 's/\n$//' | xclip -selection clipboard
@@ -364,10 +378,10 @@ clip() {
 }
 
 # opam configuration
-[[ ! -r /home/yayu/.opam/opam-init/init.zsh ]] || source /home/yayu/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
+[[ ! -r $HOME/.opam/opam-init/init.zsh ]] || source $HOME/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
 
 # Codon compiler path (added by install script)
-export PATH=/home/yayu/.codon/bin:$PATH
+[[ -d $HOME/.codon/bin ]] && export PATH=$HOME/.codon/bin:$PATH
 
 export PATH=$HOME/.cabal/bin:$HOME/.ghcup/bin:$PATH
 
@@ -386,10 +400,10 @@ command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 command -v starship &>/dev/null && eval "$(starship init zsh)"
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/yayu/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc' ]; then . '/home/yayu/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/home/yayu/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/yayu/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc"; fi
 
 
-if [ -f '/home/yayu/Project/codeql/codeql' ]; then export PATH=/home/yayu/codeql:$PATH; fi
+if [ -f "$HOME/Project/codeql/codeql" ]; then export PATH=$HOME/codeql:$PATH; fi

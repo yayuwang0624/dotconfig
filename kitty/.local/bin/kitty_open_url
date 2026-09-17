@@ -2,15 +2,21 @@
 
 url="$1"
 
-if [[ "$url" == file://* ]]; then
+if [[ "$url" == file://* ]] && command -v emacsclient >/dev/null 2>&1; then
   file="${url#file://}"
   elisp="(progn
     (find-file \"${file//\"/\\\"}\")
     (select-frame-set-input-focus (selected-frame)))"
 
-  $(emacsclient --no-wait --eval "$elisp")
+  emacsclient --no-wait --eval "$elisp"
 
-  wmctrl -xa emacs
+  if command -v wmctrl >/dev/null 2>&1; then
+    wmctrl -xa emacs
+  elif [[ "$(uname -s)" == Darwin ]]; then
+    osascript -e 'tell application "Emacs" to activate' 2>/dev/null
+  fi
+elif [[ "$(uname -s)" == Darwin ]]; then
+  exec open "$url"
 else
   exec xdg-open "$url"
 fi
