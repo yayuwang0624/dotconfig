@@ -73,6 +73,7 @@ COMPLETION_WAITING_DOTS="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git
          cp
+         ssh
          zsh-syntax-highlighting
          zsh-autosuggestions
          fzf-tab)
@@ -211,7 +212,6 @@ ZSH_HIGHLIGHT_STYLES[path]=fg=blue,underline
 ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue,bold
 ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=fg=cyan,underline
 ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=fg=cyan,underline
-ZSH_HIGHLIGHT_STYLES[comment]=fg=gray,bold
 
 
 ##################################################
@@ -220,7 +220,7 @@ ZSH_HIGHLIGHT_STYLES[comment]=fg=gray,bold
 export FZF_DEFAULT_OPTS_BASE="--height 50% --layout=reverse --border --info=inline --min-height=10 --bind ctrl-b:preview-up,ctrl-f:preview-down,alt-v:half-page-up,ctrl-v:half-page-down,alt-b:preview-half-page-up,alt-f:preview-half-page-down"
 export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :100 {}'"
 _tree_cmd=exa; (( $+commands[eza] )) && _tree_cmd=eza
-export FZF_ALT_C_OPTS="--preview '$_tree_cmd -T -L 2 --color=always $realpath| head -100'"
+export FZF_ALT_C_OPTS="--preview '$_tree_cmd -T -L 2 --color=always {} | head -100'"
 unset _tree_cmd
 
 if [ -f /usr/share/fzf/key-bindings.zsh ]; then
@@ -268,6 +268,7 @@ typeset -gA THEME_FZF_COLORS=(
   dark  'dark,fg:-1,bg:-1,gutter:#282c34,fg+:#bbc2cf,bg+:#3f444a,hl:#51afef,hl+:#51afef,info:#5B6268,border:#3f444a,prompt:#51afef,pointer:#ff6c6b,marker:#98be65,spinner:#ECBE7B,header:#c678dd'
 )
 typeset -gA THEME_BAT=( light OneHalfLight dark OneHalfDark )
+typeset -gA THEME_COMMENT=( light '#6a6b73' dark '#5B6268' )
 
 theme-show() {
   local m
@@ -289,6 +290,7 @@ theme-use() {
   export FZF_COLORS=${THEME_FZF_COLORS[$m]}
   export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS_BASE} --color=${FZF_COLORS}"
   export BAT_THEME=${THEME_BAT[$m]}
+  ZSH_HIGHLIGHT_STYLES[comment]=fg=${THEME_COMMENT[$m]},bold
   zstyle ':fzf-tab:*' fzf-flags --color=${FZF_COLORS}
 }
 
@@ -406,4 +408,4 @@ if [ -f "$HOME/Project/LLCT/docker/google-cloud-sdk/path.zsh.inc" ]; then . "$HO
 if [ -f "$HOME/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Project/LLCT/docker/google-cloud-sdk/completion.zsh.inc"; fi
 
 
-if [ -f "$HOME/Project/codeql/codeql" ]; then export PATH=$HOME/codeql:$PATH; fi
+if [ -d "$HOME/Project/codeql" ]; then export PATH=$HOME/Project/codeql:$PATH; fi
