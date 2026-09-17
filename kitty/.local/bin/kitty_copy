@@ -1,0 +1,18 @@
+#!/bin/sh
+
+tmp=$(mktemp "${TMPDIR:-/tmp}/kitty_copy.XXXXXX") || exit 1
+perl -0777 -pe 's/\n\z//' > "$tmp"
+
+if command -v pbcopy >/dev/null 2>&1; then
+  pbcopy < "$tmp"
+  rm -f "$tmp"
+elif [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null 2>&1; then
+  setsid -f sh -c 'wl-copy < "$1"; rm -f "$1"' sh "$tmp"
+elif command -v xclip >/dev/null 2>&1; then
+  setsid -f sh -c 'xclip -selection clipboard -i "$1"; rm -f "$1"' sh "$tmp"
+elif command -v xsel >/dev/null 2>&1; then
+  setsid -f sh -c 'xsel --clipboard --input < "$1"; rm -f "$1"' sh "$tmp"
+else
+  rm -f "$tmp"
+  exit 1
+fi

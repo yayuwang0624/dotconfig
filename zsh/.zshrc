@@ -74,10 +74,13 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(git
          cp
          ssh
+         sudo
+         extract
+         colored-man-pages
+         safe-paste
          zsh-syntax-highlighting
          zsh-autosuggestions
          fzf-tab)
-
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
