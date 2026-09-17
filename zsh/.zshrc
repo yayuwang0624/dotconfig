@@ -311,16 +311,18 @@ theme() {
   if [[ $m == dark ]]; then
     sed -e 's|^# *include doom_one\.conf$|include doom_one.conf|' \
         -e 's|^include doom_one_light\.conf$|# include doom_one_light.conf|' \
-        $target > $tmp && command mv -f $tmp $target
+        $target > $tmp
   else
     sed -e 's|^include doom_one\.conf$|# include doom_one.conf|' \
         -e 's|^# *include doom_one_light\.conf$|include doom_one_light.conf|' \
-        $target > $tmp && command mv -f $tmp $target
+        $target > $tmp
   fi
+  [[ -s $tmp ]] && command cat $tmp > $target
   command rm -f $tmp
 
   mkdir -p ${THEME_FILE:h} && print -r -- $m > $THEME_FILE
   theme-use $m
+  pkill -USR1 -x kitty 2>/dev/null || { [[ -n $KITTY_PID ]] && kill -USR1 $KITTY_PID 2>/dev/null }
   print -r -- "theme: $m"
 }
 
