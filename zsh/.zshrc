@@ -80,7 +80,8 @@ plugins=(git
          safe-paste
          zsh-syntax-highlighting
          zsh-autosuggestions
-         fzf-tab)
+         fzf-tab
+         direnv)
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
