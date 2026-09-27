@@ -8,7 +8,7 @@ LOGDIR="${XDG_RUNTIME_DIR:-/tmp}"
 
 # Run "$2 ..." once, unless a process matching "$1" is already running.
 run_once() {
-	pgrep -f "$1" >/dev/null 2>&1 && return
+	pgrep -f "(^|/)$1( |/|$)" >/dev/null 2>&1 && return
 	shift
 	command -v "$1" >/dev/null 2>&1 || return
 	"$@" >"$LOGDIR/$1.log" 2>&1 &
@@ -16,7 +16,7 @@ run_once() {
 
 # XWayland DPI (X11 apps only).
 if [ -f "$HOME/.Xresources" ] && command -v xrdb >/dev/null 2>&1; then
-	sed -E -i 's/Xft\.dpi:[[:space:]]*[0-9]+/Xft.dpi: 144/g' "$HOME/.Xresources"
+	sed -E -i --follow-symlinks 's/Xft\.dpi:[[:space:]]*[0-9]+/Xft.dpi: 144/g' "$HOME/.Xresources"
 	xrdb -merge "$HOME/.Xresources"
 fi
 
@@ -29,9 +29,10 @@ export XMODIFIERS=@im=ibus
 
 # Session programs.
 run_once emacs             emacs
-run_once zen-browser       zen-browser
+run_once zen-bin           zen-browser
+run_once tauonmb           tauonmb
 run_once dunst             dunst
-run_once ibus-daemon       ibus-daemon -drx
+run_once ibus-daemon       ibus-daemon -dxR
 run_once Discord           discord
 run_once monitor_indicator monitor_indicator
 run_once volnoti           volnoti      # X11, via XWayland
@@ -43,8 +44,8 @@ run_once kanshi            kanshi       # X11, via XWayland
 # Wacom: xsetwacom is X11-only — dwl has no tablet-to-output mapping.
 
 run_once swaybg swaybg \
-	-o eDP-1    -i "$HOME/Documents/Wallpapers/mao.jpg" -m fill \
-	-o HDMI-A-1 -i "$HOME/Documents/Wallpapers/mao.jpg" -m fill
+	-o DP-1     -i "$HOME/Documents/Wallpapers/mao_v.png"  -m fill \
+	-o HDMI-A-1 -i "$HOME/Documents/Wallpapers/mao.jpg"    -m fill
 
 # Warp the cursor to the primary monitor (DP-1 centre); needs ydotoold.
 if command -v ydotool >/dev/null 2>&1; then

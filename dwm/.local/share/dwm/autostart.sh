@@ -1,5 +1,5 @@
 run_once () {
-    if ! pgrep -f ${1} > /dev/null
+    if ! pgrep -f "(^|/)${1}( |/|$)" > /dev/null
     then
         shift
         if command -v ${1} > /dev/null 2>&1 ; then
@@ -19,9 +19,9 @@ focus_primary_monitor () {
 
 if [ `xrandr | grep "*" | awk '{print $1}' | grep 3840x2160 | head -n 1` = '3840x2160' ];
 then
-    sed -E -i 's/Xft.dpi: [0-9]+/Xft.dpi: 144/g' ~/.Xresources
+    sed -E -i --follow-symlinks 's/Xft.dpi: [0-9]+/Xft.dpi: 144/g' ~/.Xresources
 else
-    sed -E -i 's/Xft.dpi: [0-9]+/Xft.dpi: 144/g' ~/.Xresources
+    sed -E -i --follow-symlinks 's/Xft.dpi: [0-9]+/Xft.dpi: 144/g' ~/.Xresources
 fi
 xrdb -merge ~/.Xresources
 
@@ -31,7 +31,8 @@ autorandr -c --force
 focus_primary_monitor
 
 run_once emacs emacs
-run_once zen-browser zen-browser
+run_once zen-bin zen-browser
+run_once tauonmb tauonmb
 run_once volnoti volnoti
 run_once dunst dunst
 run_once pasystray pasystray -S
