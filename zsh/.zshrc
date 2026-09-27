@@ -404,6 +404,11 @@ if command -v uv &>/dev/null; then
   eval "$(uvx --generate-shell-completion zsh)"
 fi
 
+if [[ -d $HOME/.venvs/main && -z $VIRTUAL_ENV ]]; then
+    export VIRTUAL_ENV=$HOME/.venvs/main
+    export PATH=$VIRTUAL_ENV/bin:$PATH
+fi
+
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 command -v starship &>/dev/null && eval "$(starship init zsh)"
 
