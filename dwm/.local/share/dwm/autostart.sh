@@ -38,7 +38,7 @@ run_once dunst dunst
 run_once pasystray pasystray -S
 run_once picom picom
 run_once dwmblocks dwmblocks
-run_once ibus-daemon ibus-daemon -x -d
+run_once fcitx5 fcitx5 -d
 run_once feh feh --bg-tile ~/Documents/Wallpapers/mao.jpg --bg-fill ~/Documents/Wallpapers/mao_v.png
 run_once Snipaste Snipaste
 # run_once WeChat.exe WeChat

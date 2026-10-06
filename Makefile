@@ -49,6 +49,9 @@ xremap:
 tmux:
 	stow -t ${HOME} -R tmux
 
+fcitx5:
+	stow -t ${HOME} -R fcitx5
+
 touchpad-rotate:
 	mkdir -p touchpad-rotate/.local/bin
 	cc -O2 -Wall -Wextra `pkg-config --cflags libevdev` \
@@ -60,6 +63,6 @@ touchpad-rotate:
 	systemctl --user daemon-reload
 	systemctl --user enable --now touchpad-rotate.service
 
-install: dwm dwl formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux touchpad-rotate
+install: dwm dwl formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux fcitx5 touchpad-rotate
 
-.PHONY: all install dwl dwm formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux touchpad-rotate
+.PHONY: all install dwl dwm formatter picom rofi Xorg rime-ice starship wechat dunst kitty gdb git zsh xremap tmux fcitx5 touchpad-rotate
